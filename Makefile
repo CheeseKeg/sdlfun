@@ -12,7 +12,7 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation
+programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf
 #binaries = $(addprefix $(bin), $(programs))
 #progexec = $(addprefix exec., $(programs))
 
@@ -98,6 +98,11 @@ t8 = animation
 $(t8) : $(bin)$(t8)
 $(bin)$(t8) : $(bin)$(t8).o
 	$(clink) $^
+
+t9 = ttf
+$(t9) : $(bin)$(t9)
+$(bin)$(t9) : $(bin)$(t9).o
+	$(clink) -lSDL_ttf $^
 
 $(bin)%.o : $(src)%.cpp
 	$(cc) $(cflags) -c -o $@ $<
