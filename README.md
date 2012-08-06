@@ -24,5 +24,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Building with GNU Make (g++) on GNU/Linux
 -----------------------------------
 1. Clone the repository (run "git clone git://github.com/CheeseKeg/sdlfun.git" without quotes)
-3. Execute make in the repository's directory (run "make" without quotes)
+3. Execute make in the repository's directory (run "make all" without quotes) -- a list of commands can be 
 4. The resulting test binaries should be located in the "bin/" directory; you can execute them by navigating to "bin/" and running "./[BIN NAME]" (without quotes) -- for example: ./bin/helloworld
