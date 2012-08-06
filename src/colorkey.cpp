@@ -1,7 +1,5 @@
 #include <SDL/SDL.h>
 
-const float PI = 3.14159265358979323846f;
-
 int main (int argc, char** argv)
 {
   SDL_Init(SDL_INIT_EVERYTHING);
@@ -18,7 +16,7 @@ int main (int argc, char** argv)
   Uint32 color = SDL_MapRGB(screen->format, 0x00, 0x00, 0x00);
   //Uint32 color2 = SDL_MapRGB(screen->format, 0xff, 0xff, 0xff);
 
-  image = SDL_DisplayFormat(SDL_LoadBMP("img/enemies.bmp"));
+  image = SDL_DisplayFormat(SDL_LoadBMP("img/colorkey.bmp"));
   SDL_SetColorKey(image, SDL_SRCCOLORKEY, SDL_MapRGB(screen->format, 0x00, 0xff, 0xff));
 
   while (running)
@@ -44,15 +42,9 @@ int main (int argc, char** argv)
     SDL_Rect rect;
     rect.x = 200;
     rect.y = 100;
-
-    SDL_Rect first;
-
-    first.x = first.y = 0;
-    first.w = first.h = 128;    
-    SDL_BlitSurface(image, &first, screen, NULL);
-
-    first.x = 128;
-    SDL_BlitSurface(image, &first, screen, &rect);
+    
+    SDL_BlitSurface(image, NULL, screen, NULL);
+    SDL_BlitSurface(image, NULL, screen, &rect);
 
     SDL_Flip(screen);
 
