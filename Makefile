@@ -12,7 +12,7 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro
+programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors
 #binaries = $(addprefix $(bin), $(programs))
 #progexec = $(addprefix exec., $(programs))
 
@@ -108,6 +108,12 @@ t10 = opengl-intro
 $(t10) : $(bin)$(t10)
 $(bin)$(t10) : $(bin)$(t10).o
 	$(clink) $(glflags) $^
+
+t11 = opengl-basiccolors
+$(t11) : $(bin)$(t11)
+$(bin)$(t11) : $(bin)$(t11).o
+	$(clink) $(glflags) $^
+
 
 $(bin)%.o : $(src)%.cpp
 	$(cc) $(cflags) -c -o $@ $<
