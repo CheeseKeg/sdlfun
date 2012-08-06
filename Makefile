@@ -12,11 +12,12 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld
+programs = helloworld regulatefps rectangle
 #programs = $(addprefix $(bin), $(PROGRAMS))
 #progexec = $(addprefix exec., $(PROGRAMS))
 
-lflags = -lSDL -lGL -lGLU
+lflags = -lSDL
+glflags = -lGL -lGLU
 
 ifeq ($(build), debug)
 cflags = -Wall -O0 -g
@@ -54,13 +55,24 @@ clean :
 	rm -f $(bin)*
 	find ./ -name *~* -exec rm {} +
 
-clink = $(cc) $(lflags) -o $@ $^
+clink = $(cc) $(lflags) -o $@
 
 .PHONY : $(programs)
 
-helloworld : $(bin)helloworld
-$(bin)helloworld : $(bin)helloworld.o
-	$(clink)
+t1 = helloworld
+$(t1) : $(bin)$(t1)
+$(bin)$(t1) : $(bin)$(t1).o
+	$(clink) $^
+
+t2 = regulatefps
+$(t2) : $(bin)$(t2)
+$(bin)$(t2) : $(bin)$(t2).o
+	$(clink) $^
+
+t3 = rectangle
+$(t3) : $(bin)$(t3)
+$(bin)$(t3) : $(bin)$(t3).o
+	$(clink) $^
 
 $(bin)%.o : $(src)%.cpp
 	$(cc) $(cflags) -c -o $@ $<
