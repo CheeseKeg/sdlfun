@@ -12,9 +12,9 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld regulatefps rectangle
-#programs = $(addprefix $(bin), $(PROGRAMS))
-#progexec = $(addprefix exec., $(PROGRAMS))
+programs = helloworld regulatefps rectangle keyhandling
+#binaries = $(addprefix $(bin), $(programs))
+#progexec = $(addprefix exec., $(programs))
 
 lflags = -lSDL
 glflags = -lGL -lGLU
@@ -57,7 +57,7 @@ clean :
 
 clink = $(cc) $(lflags) -o $@
 
-.PHONY : $(programs)
+#.PHONY : $(programs)
 
 t1 = helloworld
 $(t1) : $(bin)$(t1)
@@ -72,6 +72,11 @@ $(bin)$(t2) : $(bin)$(t2).o
 t3 = rectangle
 $(t3) : $(bin)$(t3)
 $(bin)$(t3) : $(bin)$(t3).o
+	$(clink) $^
+
+t4 = keyhandling
+$(t4) : $(bin)$(t4)
+$(bin)$(t4) : $(bin)$(t4).o
 	$(clink) $^
 
 $(bin)%.o : $(src)%.cpp
