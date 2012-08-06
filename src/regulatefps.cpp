@@ -24,7 +24,7 @@ int main (int argc, char** argv)
 	break;
       }
     }
-    // Login & render
+    // Logic & render
 
     SDL_Flip(screen);
     if (SDL_GetTicks() - start < 1000/FPS)

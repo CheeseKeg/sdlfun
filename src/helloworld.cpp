@@ -20,7 +20,7 @@ int main (int argc, char** argv)
 	break;
       }
     }
-    // Login & render
+    // Logic & render
 
     SDL_Flip(screen);
   }
