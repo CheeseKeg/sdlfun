@@ -44,6 +44,8 @@ int main (int argc, char** argv)
 	case SDLK_RIGHT:
 	  b[3] = true;
 	  break;
+	default:
+	  break;
 	}
 	break;
       case SDL_KEYUP:
