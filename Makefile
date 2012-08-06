@@ -12,7 +12,7 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld regulatefps rectangle keyhandling
+programs = helloworld regulatefps rectangle keyhandling loadimage
 #binaries = $(addprefix $(bin), $(programs))
 #progexec = $(addprefix exec., $(programs))
 
@@ -77,6 +77,11 @@ $(bin)$(t3) : $(bin)$(t3).o
 t4 = keyhandling
 $(t4) : $(bin)$(t4)
 $(bin)$(t4) : $(bin)$(t4).o
+	$(clink) $^
+
+t5 = loadimage
+$(t5) : $(bin)$(t5)
+$(bin)$(t5) : $(bin)$(t5).o
 	$(clink) $^
 
 $(bin)%.o : $(src)%.cpp
