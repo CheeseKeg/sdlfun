@@ -12,7 +12,7 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors opengl-transformations opengl-displaylist opengl-cube opengl-lighting opengl-textures
+programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors opengl-transformations opengl-displaylist opengl-cube opengl-lighting opengl-textures opengl-objloader
 #binaries = $(addprefix $(bin), $(programs))
 #progexec = $(addprefix exec., $(programs))
 
@@ -137,6 +137,11 @@ $(bin)$(t15) : $(bin)$(t15).o
 t16 = opengl-textures
 $(t16) : $(bin)$(t16)
 $(bin)$(t16) : $(bin)$(t16).o
+	$(clink) $(glflags) $^
+
+t17 = opengl-objloader
+$(t17) : $(bin)$(t17)
+$(bin)$(t17) : $(bin)$(t17).o
 	$(clink) $(glflags) $^
 
 $(bin)%.o : $(src)%.cpp
