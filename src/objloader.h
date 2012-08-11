@@ -1,3 +1,6 @@
+#ifndef OBJLOADER_H
+#define OBJLOADER_H
+
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -9,9 +12,7 @@
 #include <cstdio>
 #include <iostream>
 #include <cmath>
-
-#ifndef OBJLOADER_H
-#define OBJLOADER_H
+#include "extra.h"
 
 struct coordinate
 {
@@ -66,7 +67,7 @@ class objloader
 
   bool ismaterial, isnormals, istexture, isvertexnormal;
 
-  unsigned int loadTexture(const char* filename);
+  //unsigned int loadTexture(const char* filename);
   void smoothNormals();
 
   void clean();

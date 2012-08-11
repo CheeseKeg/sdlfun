@@ -273,7 +273,10 @@ int objloader::load(const char* filename)
 	else if (mtloperation[0] == 'm' && mtloperation[1] == 'a') // Assume "map_Kd"
 	{
 	  sscanf(mtlline[j].c_str(), "map_Kd %s", &filename[0]);
+
 	  texture = loadTexture(filename);
+	  textures.push_back(texture);
+
 	  ismat = true;
 	}
       }
@@ -297,8 +300,6 @@ int objloader::load(const char* filename)
   }
 
   ismaterial = materials.size() == 0 ? false : true;
-
-  std::cout << "Drawing object" << std::endl;
 
   // Draw
 
@@ -400,14 +401,12 @@ int objloader::load(const char* filename)
   }
   glEndList();
 
-  std::cout << "Draw complete" << std::endl;
-
   clean();
   lists.push_back(num);
   return num;
 }
 
-unsigned int objloader::loadTexture(const char* filename)
+/*unsigned int objloader::loadTexture(const char* filename)
 {
   SDL_Surface* image = SDL_LoadBMP(filename);
 
@@ -424,6 +423,7 @@ unsigned int objloader::loadTexture(const char* filename)
 
   return id;
 }
+*/
 
 void objloader::smoothNormals()
 {

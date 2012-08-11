@@ -1,3 +1,6 @@
+#ifndef CAMERA_H
+#define CAMERA_H
+
 #include <cmath>
 #include <SDL/SDL.h>
 #include <GL/gl.h>
@@ -17,3 +20,5 @@ class Camera
   void Control(float, float, bool, int, int);
   void Update();
 };
+
+#endif
