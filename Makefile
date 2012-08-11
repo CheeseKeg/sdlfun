@@ -12,7 +12,7 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors opengl-transformations opengl-displaylist opengl-cube opengl-lighting opengl-textures opengl-objloader opengl-fog opengl-matrix opengl-alphablend opengl-objloader2 opengl-smoothnormals
+programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors opengl-transformations opengl-displaylist opengl-cube opengl-lighting opengl-textures opengl-objloader opengl-fog opengl-matrix opengl-alphablend opengl-objloader2 opengl-smoothnormals opengl-fpscamera
 #binaries = $(addprefix $(bin), $(programs))
 #progexec = $(addprefix exec., $(programs))
 
@@ -167,6 +167,11 @@ $(bin)$(t21) : $(bin)$(t21).o $(bin)objloader.o
 t22 = opengl-smoothnormals
 $(t22) : $(bin)$(t22)
 $(bin)$(t22) : $(bin)$(t22).o $(bin)objloader.o
+	$(clink) $(glflags) $^
+
+t23 = opengl-fpscamera
+$(t23) : $(bin)$(t23)
+$(bin)$(t23) : $(bin)$(t23).o $(bin)objloader.o $(bin)Camera.o
 	$(clink) $(glflags) $^
 
 $(bin)%.o : $(src)%.cpp
