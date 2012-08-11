@@ -64,6 +64,7 @@ texcoord::texcoord(float a, float b)
 objloader::objloader()
 {
   ismaterial = isnormals = istexture = false;
+  isvertexnormal = true;
 }
 
 int objloader::load(const char* filename)
@@ -300,6 +301,10 @@ int objloader::load(const char* filename)
   std::cout << "Drawing object" << std::endl;
 
   // Draw
+
+  if(isvertexnormal)
+    smoothNormals();
+
   int num;
   int lastmaterial = -1;
 
@@ -359,6 +364,12 @@ int objloader::load(const char* filename)
 	  glTexCoord2f(tc->u, tc->v);
 	}
 
+	if (isvertexnormal)
+	{
+	  coordinate* vn = vertexnormals[faces[i]->faces[j] - 1];
+	  glNormal3f(vn->x, vn->y, vn->z);
+	}
+
 	glVertex3f(vert[j]->x, vert[j]->y, vert[j]->z);
       }
  //glVertex3f(vertex[faces[i]->faces[3] - 1]->x, vertex[faces[i]->faces[3] - 1]->y, vertex[faces[i]->faces[3] - 1]->z);
@@ -374,6 +385,12 @@ int objloader::load(const char* filename)
 	{
 	  texcoord* tc = texturecoordinate[faces[i]->texcoord[j] - 1];
 	  glTexCoord2f(tc->u, tc->v);
+	}
+
+	if (isvertexnormal)
+	{
+	  coordinate* vn = vertexnormals[faces[i]->faces[j] - 1];
+	  glNormal3f(vn->x, vn->y, vn->z);
 	}
 
 	glVertex3f(vert[j]->x, vert[j]->y, vert[j]->z);
@@ -408,6 +425,58 @@ unsigned int objloader::loadTexture(const char* filename)
   return id;
 }
 
+void objloader::smoothNormals()
+{
+  for (unsigned int i = 1; i < vertex.size() + 1; i++)
+  {
+    float vecX, vecY, vecZ;
+    vecX = vecY = vecZ = 0.0;
+    int num = 0;
+
+    //coordinate* norm = normals[faces[i]->facenum - 1];
+
+    for (unsigned int j = 0; j < faces.size(); j++)
+    {
+      coordinate* norm = normals[faces[j]->facenum - 1];
+
+      bool foundvertex = false;
+
+      for (int k = 0; k < 4; k++)
+      {
+	if (faces[j]->faces[k] == static_cast<int>(i))
+	{
+	  foundvertex = true;
+	  break;
+	}
+      }
+
+      if (foundvertex)
+      {
+	vecX += norm->x;
+	vecY += norm->y;
+	vecZ += norm->z;
+	num++;
+      }
+    }
+    if (num)
+    {
+      vecX /= num;
+      vecY /= num;
+      vecZ /= num;
+    }
+    // Normalize the vector
+    float d = sqrt(vecX*vecX + vecY*vecY + vecZ*vecZ);
+    if (d)
+    {
+      vecX /= d;
+      vecY /= d;
+      vecZ /= d;
+    }
+    vertexnormals.push_back(new coordinate(vecX, vecY, vecZ));
+  }
+  return;
+}
+
 void objloader::clean()
 {
   for (unsigned int i = 0; i < coord.size(); i++)
@@ -422,6 +491,8 @@ void objloader::clean()
     delete materials[i];
   for (unsigned int i = 0; i < texturecoordinate.size(); i++)
     delete texturecoordinate[i];
+  for (unsigned int i = 0; i < vertexnormals.size(); i++)
+    delete vertexnormals[i];
 
   coord.clear();
   faces.clear();
@@ -429,6 +500,9 @@ void objloader::clean()
   vertex.clear();
   materials.clear();
   texturecoordinate.clear();
+  vertexnormals.clear();
+
+  return;
 }
 
 objloader::~objloader()

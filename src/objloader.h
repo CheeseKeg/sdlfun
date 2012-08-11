@@ -8,6 +8,7 @@
 #include <fstream>
 #include <cstdio>
 #include <iostream>
+#include <cmath>
 
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
@@ -61,10 +62,13 @@ class objloader
   std::vector<texcoord*> texturecoordinate;
   std::vector<unsigned int> textures;
   std::vector<unsigned int> lists;
+  std::vector<coordinate*> vertexnormals;
 
-  bool ismaterial, isnormals, istexture;
+  bool ismaterial, isnormals, istexture, isvertexnormal;
 
   unsigned int loadTexture(const char* filename);
+  void smoothNormals();
+
   void clean();
 
  public:
