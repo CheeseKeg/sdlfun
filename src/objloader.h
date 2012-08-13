@@ -14,13 +14,6 @@
 #include <cmath>
 #include "extra.h"
 
-struct coordinate
-{
-  float x, y, z;
-
-  coordinate(float a, float b, float c);
-};
-
 struct face
 {
   int facenum;
