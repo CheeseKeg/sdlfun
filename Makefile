@@ -12,7 +12,7 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors opengl-transformations opengl-displaylist opengl-cube opengl-lighting opengl-textures opengl-objloader opengl-fog opengl-matrix opengl-alphablend opengl-objloader2 opengl-smoothnormals opengl-fpscamera opengl-skybox opengl-raytracing-raysphere opengl-raytracing-rayplane opengl-collision-sphereplane opengl-heightmap opengl-improvedtextures opengl-mipmaps
+programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors opengl-transformations opengl-displaylist opengl-cube opengl-lighting opengl-textures opengl-objloader opengl-fog opengl-matrix opengl-alphablend opengl-objloader2 opengl-smoothnormals opengl-fpscamera opengl-skybox opengl-raytracing-raysphere opengl-raytracing-rayplane opengl-collision-sphereplane opengl-heightmap opengl-improvedtextures opengl-mipmaps glsl-setup
 #binaries = $(addprefix $(bin), $(programs))
 #progexec = $(addprefix exec., $(programs))
 
@@ -208,6 +208,11 @@ t30 = opengl-mipmaps
 $(t30) : $(bin)$(t30)
 $(bin)$(t30) : $(bin)$(t30).o $(bin)objloader.o $(bin)Camera.o $(bin)extra.o $(bin)Skybox.o
 	$(clink) $(glflags) $^
+
+t31 = glsl-setup
+$(t31) : $(bin)$(t31)
+$(bin)$(t31) : $(bin)$(t31).o $(bin)objloader.o $(bin)Camera.o $(bin)extra.o $(bin)Skybox.o
+	$(clink) $(glflags) -lGLee $^
 
 $(bin)%.o : $(src)%.cpp
 	$(cc) $(cflags) -c -o $@ $<
