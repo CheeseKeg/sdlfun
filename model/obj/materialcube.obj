@@ -1,6 +1,6 @@
 # Blender v2.63 (sub 17) OBJ File: 'materialcube.blend'
 # www.blender.org
-mtllib model/obj/materialcube.mtl
+mtllib materialcube.mtl
 o Cube
 v 1.000000 -1.000000 -1.000000
 v 1.000000 -1.000000 1.000000

@@ -1,6 +1,6 @@
 # Blender v2.63 (sub 17) OBJ File: 'uvcube.blend'
 # www.blender.org
-mtllib model/obj/uvcube.mtl
+mtllib uvcube.mtl
 o Cube
 v 1.000000 -1.000000 -1.000000
 v 1.000000 -1.000000 1.000000

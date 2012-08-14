@@ -65,19 +65,23 @@ objloader::objloader()
 {
   ismaterial = isnormals = istexture = false;
   isvertexnormal = true;
+  currentLoadPath = "";
 }
 
-int objloader::load(const char* filename)
+int objloader::load(std::string filename)
 {
   std::cout << "Reading/parsing object file: " << filename << std::endl;
 
-  std::ifstream in(filename);
+  std::ifstream in(filename.c_str());
   if(!in.is_open())
   {
     std::cout << "Unable to read object file: " << filename << std::endl;
 
     return -1;
   }
+
+  unsigned int beforeslash = filename.find_last_of('/');
+  currentLoadPath = filename.substr(0, (beforeslash != std::string::npos ? beforeslash + 1 : 0));
 
   // Current material
   int curmat = 0;
@@ -179,12 +183,14 @@ int objloader::load(const char* filename)
       char materialfilename[200];
       sscanf(coord[i]->c_str(), "mtllib %s", materialfilename);
 
+      std::string materialpath = currentLoadPath + materialfilename;
+
       std::cout << "Reading material file: " << materialfilename << std::endl;
 
-      std::ifstream mtlin(materialfilename);
+      std::ifstream mtlin(materialpath.c_str());
       if (!mtlin.is_open())
       {
-	std::cout << "Unable to read material file:" << materialfilename << std::endl;
+	std::cout << "Unable to read material file:" << materialpath << std::endl;
 	clean();
 
 	return -1;

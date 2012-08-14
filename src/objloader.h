@@ -57,6 +57,7 @@ class objloader
   std::vector<unsigned int> textures;
   std::vector<unsigned int> lists;
   std::vector<coordinate*> vertexnormals;
+  std::string currentLoadPath;
 
   bool ismaterial, isnormals, istexture, isvertexnormal;
 
@@ -69,7 +70,7 @@ class objloader
 
   objloader();
   ~objloader();
-  int load (const char* filename);
+  int load (std::string);
 };
 
 #endif

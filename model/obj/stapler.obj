@@ -1,6 +1,6 @@
 # Blender v2.63 (sub 17) OBJ File: 'stapler.blend'
 # www.blender.org
-mtllib model/obj/stapler.mtl
+mtllib stapler.mtl
 o Stapler_meStapler
 v 0.780336 0.259938 -0.510543
 v 0.780336 0.009938 -0.519543
