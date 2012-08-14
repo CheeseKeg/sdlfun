@@ -15,7 +15,7 @@ void Skybox::Init(const char* path)
   for (int i = 0; i < 6; i++)
   {
     filenames[i] = path + filenames[i];
-    textures[i] = loadTexture(filenames[i].c_str());
+    textures[i] = loadTexture(filenames[i].c_str(), true);
   }
 
   return;

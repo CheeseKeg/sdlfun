@@ -280,7 +280,7 @@ int objloader::load(std::string filename)
 	{
 	  sscanf(mtlline[j].c_str(), "map_Kd %s", &filename[0]);
 
-	  texture = loadTexture(filename);
+	  texture = loadTexture(filename, true);
 	  textures.push_back(texture);
 
 	  ismat = true;

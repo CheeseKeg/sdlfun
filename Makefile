@@ -12,11 +12,11 @@ bin = bin/
 src = src/
 cc = g++
 
-programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors opengl-transformations opengl-displaylist opengl-cube opengl-lighting opengl-textures opengl-objloader opengl-fog opengl-matrix opengl-alphablend opengl-objloader2 opengl-smoothnormals opengl-fpscamera opengl-skybox opengl-raytracing-raysphere opengl-raytracing-rayplane opengl-collision-sphereplane opengl-heightmap
+programs = helloworld regulatefps rectangle keyhandling loadimage colorkey blitimage animation ttf opengl-intro opengl-basiccolors opengl-transformations opengl-displaylist opengl-cube opengl-lighting opengl-textures opengl-objloader opengl-fog opengl-matrix opengl-alphablend opengl-objloader2 opengl-smoothnormals opengl-fpscamera opengl-skybox opengl-raytracing-raysphere opengl-raytracing-rayplane opengl-collision-sphereplane opengl-heightmap opengl-improvedtextures
 #binaries = $(addprefix $(bin), $(programs))
 #progexec = $(addprefix exec., $(programs))
 
-lflags = -lSDL
+lflags = -lSDL -lSDL_image
 glflags = -lGL -lGLU
 
 ifeq ($(build), debug)
@@ -197,6 +197,11 @@ $(bin)$(t27) : $(bin)$(t27).o $(bin)objloader.o $(bin)Camera.o $(bin)extra.o $(b
 t28 = opengl-heightmap
 $(t28) : $(bin)$(t28)
 $(bin)$(t28) : $(bin)$(t28).o $(bin)objloader.o $(bin)Camera.o $(bin)extra.o $(bin)Skybox.o
+	$(clink) $(glflags) $^
+
+t29 = opengl-improvedtextures
+$(t29) : $(bin)$(t29)
+$(bin)$(t29) : $(bin)$(t29).o $(bin)objloader.o $(bin)Camera.o $(bin)extra.o $(bin)Skybox.o
 	$(clink) $(glflags) $^
 
 $(bin)%.o : $(src)%.cpp

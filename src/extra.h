@@ -2,6 +2,7 @@
 #define EXTRA_H
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <cmath>
@@ -16,7 +17,7 @@ struct coordinate
 };
 
 void drawCube(float size);
-unsigned int loadTexture(const char* filename);
+unsigned int loadTexture(const char* filename, bool clamp);
 void loadHeightmap(const char* name, std::vector< std::vector<float> >& heights);
 void renderHeightmap(float size, float h, std::vector< std::vector<float> >& heights);
 

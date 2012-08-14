@@ -47,9 +47,23 @@ void drawCube(float size)
   return;
 }
 
-unsigned int loadTexture(const char* filename)
+unsigned int loadTexture(const char* filename, bool clamp)
 {
-  SDL_Surface* image = SDL_LoadBMP(filename);
+  SDL_Surface* image = IMG_Load(filename);
+
+  if (image == NULL)
+  {
+    std::cout << "Unable to load image file: " << filename << std::endl;
+    return 0;
+  }
+
+  SDL_PixelFormat form = {NULL, 32, 4, 0, 0, 0, 0, 8, 8, 8, 8, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff, 0, 255};
+  SDL_Surface* convert = SDL_ConvertSurface(image, &form, SDL_SWSURFACE);
+  if (convert == NULL)
+  {
+    std::cout << "Unable to convert image data loaded from: " << filename << std::endl;
+    return -1;
+  }
 
   unsigned int id;
   glGenTextures(1, &id);
@@ -57,12 +71,16 @@ unsigned int loadTexture(const char* filename)
   
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  if (clamp)
+  {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  }
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, image->pixels);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, convert->w, convert->h, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, convert->pixels);
 
   SDL_FreeSurface(image);
+  SDL_FreeSurface(convert);
 
   return id;
 }
