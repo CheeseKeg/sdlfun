@@ -67,6 +67,59 @@ unsigned int loadTexture(const char* filename)
   return id;
 }
 
+// Load 32 bit height bitmaps
+void loadHeightmap(const char* filename, std::vector< std::vector<float> >& heights)
+{
+  SDL_Surface* image = SDL_LoadBMP(filename);
+
+  if (!image)
+  {
+    std::cout << "Unable to load image: " << filename << std::endl;
+    return;
+  }
+
+  std::vector<float> temp;
+  for (int i = 0; i < image->h; i++)
+  {
+    temp.clear();
+    for (int j = 0; j < image->w; j++)
+    {
+      Uint32 pixel = ((Uint32*)image->pixels)[i*image->pitch/4 + j];
+      Uint8 r, g, b; // Unsigned char
+
+      SDL_GetRGB(pixel, image->format, &r, &g, &b);
+
+      temp.push_back((float)r/255.0);
+    }
+    heights.push_back(temp);
+  }
+
+  return;
+}
+
+void renderHeightmap(float size, float h, std::vector<std::vector<float> >& heights)
+{
+  for (unsigned int i = 0; i < heights.size() - 1; i++)
+  {
+    for (unsigned int j = 0; j < heights[0].size() - 1; j++)
+    {
+      glBegin(GL_TRIANGLE_STRIP);
+      for (int k = 0; k < 2; k++)
+      {
+	for (int l = 0; l < 2; l++)
+	{
+	  //glColor3f(heights[i + l][j + k], 1 - heights[i + l][j + k], 0.0); // Green to red
+	  float col[] = {heights[i + l][j + k], 1 - heights[i + l][j + k], 0.0, 1.0};
+	  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);
+
+	  glVertex3f((i + l)*size, heights[i + l][j + k]*h, (j + k)*size);
+	}
+      }
+      glEnd();
+    }
+  }
+}
+
 bool raysphere(float xc, float yc, float zc, float xd, float yd, float zd, float xs, float ys, float zs, float r)
 {
   float b = 2*(xd*(xs-xc)+yd*(ys-yc)+zd*(zs-zc));
