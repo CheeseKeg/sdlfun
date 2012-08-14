@@ -17,7 +17,7 @@ struct coordinate
 };
 
 void drawCube(float size);
-unsigned int loadTexture(const char* filename, bool clamp);
+unsigned int loadTexture(const char* filename, bool clamp = false, bool generate = false);
 void loadHeightmap(const char* name, std::vector< std::vector<float> >& heights);
 void renderHeightmap(float size, float h, std::vector< std::vector<float> >& heights);
 

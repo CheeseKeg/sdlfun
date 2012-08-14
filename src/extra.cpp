@@ -47,7 +47,7 @@ void drawCube(float size)
   return;
 }
 
-unsigned int loadTexture(const char* filename, bool clamp)
+unsigned int loadTexture(const char* filename, bool clamp, bool generate)
 {
   SDL_Surface* image = IMG_Load(filename);
 
@@ -68,8 +68,9 @@ unsigned int loadTexture(const char* filename, bool clamp)
   unsigned int id;
   glGenTextures(1, &id);
   glBindTexture(GL_TEXTURE_2D, id);
-  
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+  GLint minfilter = generate ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   if (clamp)
   {
@@ -77,7 +78,10 @@ unsigned int loadTexture(const char* filename, bool clamp)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, convert->w, convert->h, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, convert->pixels);
+  if (generate)
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, convert->w, convert->h, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, convert->pixels);
+  else
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, convert->w, convert->h, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8, convert->pixels);
 
   SDL_FreeSurface(image);
   SDL_FreeSurface(convert);
