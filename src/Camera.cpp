@@ -46,6 +46,14 @@ void Camera::MoveUp(float distance, float direction)
 
   return;
 }
+
+void Camera::MoveTo(coordinate position)
+{
+  x = position.x;
+  y = position.y;
+  z = position.z;
+}
+
 void Camera::Control(float movevelosity, float mousevelosity, bool mousein, int screenx, int screeny)
 {
   if (mousein)

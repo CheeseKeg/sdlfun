@@ -91,10 +91,10 @@ void display()
   // START DRAW PLANE
 
   glBegin(GL_QUADS);
-  glVertex3f(-5.0, 5.0, -5.0);
-  glVertex3f(5.0, 5.0, -5.0);
-  glVertex3f(5.0, -5.0, -5.0);
-  glVertex3f(-5.0, -5.0, -5.0);
+  glVertex3f(-5.0, 5.0, 5.0);
+  glVertex3f(5.0, 5.0, 5.0);
+  glVertex3f(5.0, -5.0, 5.0);
+  glVertex3f(-5.0, -5.0, 5.0);
   glEnd();
 
   // END DRAW PLANE
@@ -220,6 +220,10 @@ int main (int argc, char** argv)
     {
       angle -= 360;
     }
+
+    coordinate camPos(cam->x, cam->y, cam->z);
+    sphereplane(camPos, coordinate(0.0, 0.0, 1.0), p1, p2, p3, p4, 2.0);
+    cam->MoveTo(camPos);
 
     if (SDL_GetTicks() - start < 1000/FPS)
     {

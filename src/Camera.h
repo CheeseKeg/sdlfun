@@ -5,6 +5,7 @@
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include "objloader.h"
 
 class Camera
 {
@@ -16,6 +17,7 @@ class Camera
 
   void Move(float, float);
   void MoveUp(float, float);
+  void MoveTo(coordinate position);
   void Lock();
   void Control(float, float, bool, int, int);
   void Update();

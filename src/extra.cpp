@@ -81,27 +81,72 @@ bool raysphere(float xc, float yc, float zc, float xd, float yd, float zd, float
   return intersecting;
 }
 
-bool rayplane(float nx,float ny,float nz,float xs,float ys,float zs,float xd,float yd,float zd,coordinate p1,coordinate p2,coordinate p3,coordinate p4)
+bool rayplane(float nx, float ny, float nz, float xs, float ys, float zs, float xd, float yd, float zd, coordinate p1, coordinate p2, coordinate p3, coordinate p4, float* dist, coordinate* point)
 {
-        float a = xd*nx + yd*ny + zd*nz;
-        if(a==0)
-                return false;
-        float t = ((p1.x*nx + p1.y*ny + p1.z*nz - nx*xs - ny*ys - nz*zs)/a);
-        if(t<0)
-                return false;
-        float x = xs + t*xd;
-        float y = ys + t*yd;
-        float z = zs + t*zd;
-        coordinate cp(x,y,z);
-        if(abs(trianglearea(p1,p3,p4) - trianglearea(p1,p4,cp)-trianglearea(p1,p3,cp)-trianglearea(p3,p4,cp))<0.000001 || abs(trianglearea(p1,p2,p3)-trianglearea(p1,p2,cp)-trianglearea(p2,p3,cp)-trianglearea(p1,p3,cp))<0.000001)
-                return true;
-        return false;
+  float a = xd*nx + yd*ny + zd*nz;
+  if(a==0)
+    return false;
+  float t = ((p1.x*nx + p1.y*ny + p1.z*nz - nx*xs - ny*ys - nz*zs)/a);
+  if(t<0)
+    return false;
+  float x = xs + t*xd;
+  float y = ys + t*yd;
+  float z = zs + t*zd;
+  coordinate cp(x,y,z);
+  if(abs(trianglearea(p1, p3, p4) - trianglearea(p1, p4, cp) - trianglearea(p1, p3, cp) - trianglearea(p3, p4, cp)) < 0.000001 || abs(trianglearea(p1, p2, p3) - trianglearea(p1, p2, cp) - trianglearea(p2, p3, cp) - trianglearea(p1, p3, cp)) < 0.000001)
+  {
+    if (dist != NULL)
+    {
+      (*dist) = t;
+
+      if (point != NULL)
+      {
+	point->x = x;
+	point->y = y;
+	point->z = z;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
 }
- 
- 
+
+bool sphereplane(coordinate& sp, coordinate vn, coordinate p1, coordinate p2, coordinate p3, coordinate p4, float r)
+{
+  float dist1, dist2;
+  dist1 = dist2 = 0;
+
+  if (rayplane(-vn.x, -vn.y, -vn.z, sp.x, sp.y, sp.z, vn.x, vn.y, vn.z, p1, p2, p3, p4, &dist1, NULL) || rayplane(vn.x, vn.y, vn.z, sp.x, sp.y, sp.z, -vn.x, -vn.y, -vn.z, p1, p2, p3, p4, &dist2, NULL))
+  {
+    if (dist1 > r || dist2 > r)
+      return false;
+
+    if (dist1 > 0)
+    {
+      const float offdist = r - dist1;
+      sp.x = sp.x - vn.x*(offdist);
+      sp.y = sp.y - vn.y*(offdist);
+      sp.z = sp.z - vn.z*(offdist);
+    }
+    else
+    {
+      const float offdist = r - dist2;
+      sp.x = sp.x + vn.x*(offdist);
+      sp.y = sp.y + vn.y*(offdist);
+      sp.z = sp.z + vn.z*(offdist);
+    }
+
+    return 1;
+  }
+
+  return 0;
+}
+
 float trianglearea(coordinate p1,coordinate p2,coordinate p3)
 {
-        // Heron formula
+        // Heron's formula
         float a=sqrt((p2.x-p1.x)*(p2.x-p1.x)+(p2.y-p1.y)*(p2.y-p1.y)+(p2.z-p1.z)*(p2.z-p1.z));
         float b=sqrt((p3.x-p2.x)*(p3.x-p2.x)+(p3.y-p2.y)*(p3.y-p2.y)+(p3.z-p2.z)*(p3.z-p2.z));
         float c=sqrt((p1.x-p3.x)*(p1.x-p3.x)+(p1.y-p3.y)*(p1.y-p3.y)+(p1.z-p3.z)*(p1.z-p3.z));
