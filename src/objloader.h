@@ -70,7 +70,11 @@ class objloader
 
   objloader();
   ~objloader();
-  int load (std::string);
+  int load(std::string);
+
+ private:
+
+  int loadMaterial(std::string);
 };
 
 #endif

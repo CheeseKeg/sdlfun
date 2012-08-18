@@ -183,117 +183,8 @@ int objloader::load(std::string filename)
       char materialfilename[200];
       sscanf(coord[i]->c_str(), "mtllib %s", materialfilename);
 
-      std::string materialpath = currentLoadPath + materialfilename;
-
-      std::cout << "Reading material file: " << materialfilename << std::endl;
-
-      std::ifstream mtlin(materialpath.c_str());
-      if (!mtlin.is_open())
-      {
-	std::cout << "Unable to read material file:" << materialpath << std::endl;
-	clean();
-
+      if (loadMaterial(materialfilename) == -1)
 	return -1;
-      }
-
-      ismaterial = true;
-
-      std::vector<std::string> mtlline;
-      char c[200];
-      while(!mtlin.eof())
-      {
-	mtlin.getline(c, 200);
-	mtlline.push_back(c);
-      }
-
-      char name[200];
-      char filename[200];
-      float ambient[3], diffuse[3], specular[3], alpha, ns, ni;
-      int illum, texture = -1;
-      bool ismat = false;
-
-      strcpy(filename, "\0");
-
-
-      const int mtloperationbuffer = 3;
-      char mtloperation[mtloperationbuffer];
-
-      for (unsigned int j = 0; j < mtlline.size(); j++)
-      {
-	for (int k = 0; k < mtloperationbuffer; k++)
-	{
-	  mtloperation[k] = mtlline[j][k];
-	}
-
-	if (mtloperation[0] == '#') // "#" = COMMENT
-	  continue;
-	if (mtloperation[0] == 'n' && mtloperation[1] == 'e' && mtloperation[2] == 'w') // Assume "newmtl"; create a new material object
-	{
-	  if(ismat) // Was a material just being parsed?
-	  {
-	    if(strcmp(filename, "\0") != 0) // Did the material have a texture?
-	      strcpy(filename, "\0"); // Reset the texture filename
-	    else
-	      texture = -1; // If it didn't, the texture parameter needs to indicate such
-
-	    materials.push_back(new material(name, alpha, ns, ni, diffuse, ambient, specular, illum, texture));
-	  }
-	  ismat = false;
-	  sscanf(mtlline[j].c_str(), "newmtl %s", name);
-	}
-	else if (mtloperation[0] == 'N' && mtloperation[1] == 's')
-	{
-	  sscanf(mtlline[j].c_str(), "Ns %f", &ns);
-	  ismat = true;
-	}
-	else if (mtloperation[0] == 'K' && mtloperation[1] == 'a')
-	{
-	  sscanf(mtlline[j].c_str(), "Ka %f %f %f", &ambient[0], &ambient[1], &ambient[2]);
-	  ismat = true;
-	}
-	else if (mtloperation[0] == 'K' && mtloperation[1] == 'd')
-	{
-	  sscanf(mtlline[j].c_str(), "Kd %f %f %f", &diffuse[0], &diffuse[1], &diffuse[2]);
-	  ismat = true;
-	}
-	else if (mtloperation[0] == 'K' && mtloperation[1] == 's')
-	{
-	  sscanf(mtlline[j].c_str(), "Ks %f %f %f", &specular[0], &specular[1], &specular[2]);
-	  ismat = true;
-	}
-	else if (mtloperation[0] == 'N' && mtloperation[1] == 'i')
-	{
-	  sscanf(mtlline[j].c_str(), "Ni %f", &ni);
-	  ismat = true;
-	}
-	else if (mtloperation[0] == 'd' && mtloperation[1] == ' ')
-	{
-	  sscanf(mtlline[j].c_str(), "d %f", &alpha);
-	  ismat = true;
-	}
-	else if (mtloperation[0] == 'i' && mtloperation[1] == 'l') // Assume "illum"
-	{
-	  sscanf(mtlline[j].c_str(), "illum %d", &illum);
-	  ismat = true;
-	}
-	else if (mtloperation[0] == 'm' && mtloperation[1] == 'a') // Assume "map_Kd"
-	{
-	  sscanf(mtlline[j].c_str(), "map_Kd %s", &filename[0]);
-
-	  texture = loadTexture(filename, true);
-	  textures.push_back(texture);
-
-	  ismat = true;
-	}
-      }
-      if(ismat)
-      {
-        if(strcmp(filename, "\0") == 0)
-        {
-          texture = -1;
-        }
-        materials.push_back(new material(name, alpha, ns, ni, diffuse, ambient, specular, illum, texture));
-      }
     }
     else if (operation[0] == 'v' && operation[1] == 't') // "vt" = TEXTURE COORDINATE
     {
@@ -319,6 +210,8 @@ int objloader::load(std::string filename)
   glNewList(num, GL_COMPILE);
   for (unsigned int i = 0; i < faces.size(); i++)
   {
+    // GENERATE FACE MATERIAL
+
     if (ismaterial && lastmaterial != faces[i]->mat)
     {
       material* mat = materials[faces[i]->mat];
@@ -349,6 +242,7 @@ int objloader::load(std::string filename)
       }
     }
 
+    // FIND FACE NORMAL
 
     coordinate* vert[4];
     coordinate* normal;
@@ -359,51 +253,33 @@ int objloader::load(std::string filename)
 
     normal = normals[faces[i]->facenum - 1];
 
+    // GENERATE FACE GEOMETRY
+
+    unsigned int verts;
     if (faces[i]->four)
-    {
-      glBegin(GL_QUADS);
-      glNormal3f(normal->x, normal->y, normal->z);
-      for (int j = 0; j < 4; j++)
-      {
-        if (istexture && materials[faces[i]->mat]->texture != -1)
-	{
-	  texcoord* tc = texturecoordinate[faces[i]->texcoord[j] - 1];
-	  glTexCoord2f(tc->u, tc->v);
-	}
-
-	if (isvertexnormal)
-	{
-	  coordinate* vn = vertexnormals[faces[i]->faces[j] - 1];
-	  glNormal3f(vn->x, vn->y, vn->z);
-	}
-
-	glVertex3f(vert[j]->x, vert[j]->y, vert[j]->z);
-      }
- //glVertex3f(vertex[faces[i]->faces[3] - 1]->x, vertex[faces[i]->faces[3] - 1]->y, vertex[faces[i]->faces[3] - 1]->z);
-      glEnd();
-    }
+      verts = 4;
     else
+      verts = 3;
+
+    glBegin(faces[i]->four ? GL_QUADS : GL_TRIANGLES);
+    glNormal3f(normal->x, normal->y, normal->z);
+    for (unsigned int j = 0; j < verts; j++)
     {
-      glBegin(GL_TRIANGLES);
-      glNormal3f(normal->x, normal->y, normal->z);
-      for (int j = 0; j < 3; j++)
+      if (istexture && materials[faces[i]->mat]->texture != -1)
       {
-	if (istexture && materials[faces[i]->mat]->texture != -1)
-	{
-	  texcoord* tc = texturecoordinate[faces[i]->texcoord[j] - 1];
-	  glTexCoord2f(tc->u, tc->v);
-	}
-
-	if (isvertexnormal)
-	{
-	  coordinate* vn = vertexnormals[faces[i]->faces[j] - 1];
-	  glNormal3f(vn->x, vn->y, vn->z);
-	}
-
-	glVertex3f(vert[j]->x, vert[j]->y, vert[j]->z);
+        texcoord* tc = texturecoordinate[faces[i]->texcoord[j] - 1];
+        glTexCoord2f(tc->u, tc->v);
       }
-      glEnd();
+
+      if (isvertexnormal)
+      {
+        coordinate* vn = vertexnormals[faces[i]->faces[j] - 1];
+        glNormal3f(vn->x, vn->y, vn->z);
+      }
+
+      glVertex3f(vert[j]->x, vert[j]->y, vert[j]->z);
     }
+    glEnd();
   }
   glEndList();
 
@@ -412,24 +288,122 @@ int objloader::load(std::string filename)
   return num;
 }
 
-/*unsigned int objloader::loadTexture(const char* filename)
+int objloader::loadMaterial(std::string materialfilename)
 {
-  SDL_Surface* image = SDL_LoadBMP(filename);
+  std::string materialpath = currentLoadPath + materialfilename;
 
-  unsigned int id;
-  glGenTextures(1, &id);
-  glBindTexture(GL_TEXTURE_2D, id);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, image->pixels);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  std::cout << "Reading material file: " << materialfilename << std::endl;
 
-  SDL_FreeSurface(image);
+  std::ifstream mtlin(materialpath.c_str());
+  if (!mtlin.is_open())
+  {
+	std::cout << "Unable to read material file:" << materialpath << std::endl;
+	clean();
 
-  textures.push_back(id);
+	return -1;
+  }
 
-  return id;
+  ismaterial = true;
+
+  std::vector<std::string> mtlline;
+  char c[200];
+  while(!mtlin.eof())
+  {
+	mtlin.getline(c, 200);
+	mtlline.push_back(c);
+  }
+
+  char name[200];
+  char filename[200];
+  float ambient[3], diffuse[3], specular[3], alpha, ns, ni;
+  int illum, texture = -1;
+  bool ismat = false;
+
+  strcpy(filename, "\0");
+
+
+  const int mtloperationbuffer = 3;
+  char mtloperation[mtloperationbuffer];
+
+  for (unsigned int j = 0; j < mtlline.size(); j++)
+  {
+    for (int k = 0; k < mtloperationbuffer; k++)
+    {
+      mtloperation[k] = mtlline[j][k];
+    }
+
+    if (mtloperation[0] == '#') // "#" = COMMENT
+      continue;
+    if (mtloperation[0] == 'n' && mtloperation[1] == 'e' && mtloperation[2] == 'w') // Assume "newmtl"; create a new material object
+    {
+      if(ismat) // Was a material just being parsed?
+      {
+        if(strcmp(filename, "\0") != 0) // Did the material have a texture?
+          strcpy(filename, "\0"); // Reset the texture filename
+        else
+          texture = -1; // If it didn't, the texture parameter needs to indicate such
+
+        materials.push_back(new material(name, alpha, ns, ni, diffuse, ambient, specular, illum, texture));
+      }
+      ismat = false;
+      sscanf(mtlline[j].c_str(), "newmtl %s", name);
+    }
+    else if (mtloperation[0] == 'N' && mtloperation[1] == 's')
+    {
+      sscanf(mtlline[j].c_str(), "Ns %f", &ns);
+      ismat = true;
+    }
+    else if (mtloperation[0] == 'K' && mtloperation[1] == 'a')
+    {
+      sscanf(mtlline[j].c_str(), "Ka %f %f %f", &ambient[0], &ambient[1], &ambient[2]);
+      ismat = true;
+    }
+    else if (mtloperation[0] == 'K' && mtloperation[1] == 'd')
+    {
+      sscanf(mtlline[j].c_str(), "Kd %f %f %f", &diffuse[0], &diffuse[1], &diffuse[2]);
+      ismat = true;
+    }
+    else if (mtloperation[0] == 'K' && mtloperation[1] == 's')
+    {
+      sscanf(mtlline[j].c_str(), "Ks %f %f %f", &specular[0], &specular[1], &specular[2]);
+      ismat = true;
+    }
+    else if (mtloperation[0] == 'N' && mtloperation[1] == 'i')
+    {
+      sscanf(mtlline[j].c_str(), "Ni %f", &ni);
+      ismat = true;
+    }
+    else if (mtloperation[0] == 'd' && mtloperation[1] == ' ')
+    {
+      sscanf(mtlline[j].c_str(), "d %f", &alpha);
+      ismat = true;
+    }
+    else if (mtloperation[0] == 'i' && mtloperation[1] == 'l') // Assume "illum"
+    {
+      sscanf(mtlline[j].c_str(), "illum %d", &illum);
+      ismat = true;
+    }
+    else if (mtloperation[0] == 'm' && mtloperation[1] == 'a') // Assume "map_Kd"
+    {
+      sscanf(mtlline[j].c_str(), "map_Kd %s", &filename[0]);
+
+      texture = loadTexture(filename, true);
+      textures.push_back(texture);
+
+      ismat = true;
+    }
+  }
+  if(ismat)
+  {
+    if(strcmp(filename, "\0") == 0)
+    {
+      texture = -1;
+    }
+    materials.push_back(new material(name, alpha, ns, ni, diffuse, ambient, specular, illum, texture));
+  }
+
+  return 0;
 }
-*/
 
 void objloader::smoothNormals()
 {

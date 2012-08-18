@@ -35,7 +35,7 @@ void init(SDL_Surface* screen)
   sky->Init("img/skybox/");
   sky->Compile(50.0);
 
-  cube = obj.load("model/obj/stapler.obj");
+  cube = obj.load("model/obj/monkey.obj");
   cam = new Camera(0.0, 0.0, -5.0, 0.0, 0.0);
 }
 
